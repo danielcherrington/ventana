@@ -13,6 +13,8 @@ var _baseActions = ['read', 'update', 'create', 'delete'];
 var _refreshTokenSuccess = function(c) {c();};
 var _bulkQueues = { };
 var _state = { };
+var _ = require("underscore")
+var FormData = require('form-data');
 
 /**
  * Represents AJAX error.
@@ -225,7 +227,10 @@ _.extend(HttpRequest.prototype, {
          * @memberof HttpRequest
          * @instance
          */
-        this.xhr = $.ajax(this.params);
+
+        console.log(this.params)
+        this.xhr = fetch(this.params.url, this.params)
+        //this.xhr = $.ajax(this.params);
     }
 });
 
@@ -849,7 +854,7 @@ function SugarApi(args) {
                 }
             }
 
-            if (action && $.inArray(action, _baseActions) === -1) {
+            if (action &&  _baseActions.includes(action) === -1) {
                 parts.push(action);
             }
 
@@ -878,7 +883,7 @@ function SugarApi(args) {
                 }
             });
 
-            params = $.param(params);
+             params = new URLSearchParams(Object.entries(params)).toString()
             if (params.length > 0) {
                 url += '?' + params;
             }
@@ -2137,9 +2142,7 @@ module.exports = {
     createInstance: function(args) {
         _instance = new SugarApi(args);
 
-        if (!('crosstab' in window) || !crosstab.supported) {
-            return _instance;
-        }
+      
 
         // this event should only be triggered on master tab and if
         // crosstab library is loaded
